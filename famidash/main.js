@@ -46,7 +46,7 @@ for (let i = 0; i < g_total_buffers; i++) {
 
 // ========== Worker Setup and Utility ==========
 
-var worker = new Worker('emu_worker.js');
+var worker = new Worker('"https://cdn.jsdelivr.net/gh/67-Factory/web-ports@main/famidash/emu_worker.js');
 
 function rpc(task, args) {
   return new Promise((resolve, reject) => {
