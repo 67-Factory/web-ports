@@ -188,11 +188,62 @@ async function init_audio_context() {
     latencyHint: 'interactive',
     sampleRate: 44100,
   });
-  await g_audio_context.audioWorklet.addModule('audio_processor.js');
+
+  const NES_AUDIO_WORKLET_CODE = `
+class NesAudioProcessor extends AudioWorkletProcessor {
+  constructor (...args) {
+    super(...args);
+    this.sampleBuffer = new Int16Array(0);
+    this.lastPlayedSample = 0;
+    this.port.onmessage = (e) => {
+      if (e.data.type === "samples") {
+        const merged = new Int16Array(this.sampleBuffer.length + e.data.samples.length);
+        merged.set(this.sampleBuffer);
+        merged.set(e.data.samples, this.sampleBuffer.length);
+        this.sampleBuffer = merged;
+      }
+    };
+  }
+
+  process (inputs, outputs) {
+    const output = outputs[0];
+    const desiredLength = output[0].length;
+
+    if (desiredLength <= this.sampleBuffer.length) {
+      output.forEach(channel => {
+        for (let i = 0; i < channel.length; i++) {
+          channel[i] = this.sampleBuffer[i] / 32768;
+        }
+      });
+
+      this.lastPlayedSample = this.sampleBuffer[desiredLength - 1];
+      this.sampleBuffer = this.sampleBuffer.slice(desiredLength);
+      this.port.postMessage({ type: "samplesPlayed", count: desiredLength });
+    } else {
+      output.forEach(channel => {
+        for (let i = 0; i < channel.length; i++) {
+          channel[i] = this.lastPlayedSample / 32768;
+        }
+      });
+
+      this.port.postMessage({ type: "audioUnderrun", count: output[0].length });
+    }
+
+    return true;
+  }
+}
+
+registerProcessor("nes-audio-processor", NesAudioProcessor);
+`;
+
+  const blob = new Blob([NES_AUDIO_WORKLET_CODE], { type: "application/javascript" });
+  const workletURL = URL.createObjectURL(blob);
+  await g_audio_context.audioWorklet.addModule(workletURL);
   g_nes_audio_node = new AudioWorkletNode(g_audio_context, 'nes-audio-processor');
   g_nes_audio_node.connect(g_audio_context.destination);
   g_nes_audio_node.port.onmessage = handle_audio_message;
 }
+
 
 function handle_audio_message(e) {
   if (e.data.type == "samplesPlayed") {
@@ -211,27 +262,16 @@ function handle_audio_message(e) {
   }
 }
 
-// ========== Main ==========
-
 async function onready() {
-  // Initialize audio context, this will also begin audio playback
   await init_audio_context();
-
-  // Initialize everything else
   init_ui_events();
   initializeButtonMappings();
-
-  // Kick off the events that will drive emulation
   requestAnimationFrame(renderLoop);
-  // run the scheduler as often as we can. It will frequently decide not to schedule things, this is fine.
-  //window.setInterval(schedule_frames_at_top_speed, 1);
   window.setTimeout(sync_to_audio, 1);
   window.setInterval(compute_fps, 1000);
   window.setInterval(render_profiling_results, 1000);
   window.setInterval(automatic_frameskip, 1000);
   window.setInterval(save_sram_periodically, 10000);
-
-  // Attempt to load a cartridge by URL, if one is provided
   let params = new URLSearchParams(location.search.slice(1));
   if (params.get("cartridge")) {
     load_cartridge_by_url(params.get("cartridge"));
@@ -246,7 +286,6 @@ async function onready() {
 }
 
 function init_ui_events() {
-  // Setup UI events
   document.getElementById('file-loader').addEventListener('change', load_cartridge_by_file, false);
 
   var buttons = document.querySelectorAll("#main_menu button");
@@ -255,7 +294,6 @@ function init_ui_events() {
   });
 
   window.addEventListener("click", function() {
-    // Needed to play audio in certain browsers, notably Chrome, which restricts playback until user action.
     g_audio_context.resume();
   });
 
