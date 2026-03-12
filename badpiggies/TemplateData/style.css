@@ -9,8 +9,8 @@ body::before {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
+    width: 50%;
+    height: 50%;
     background: url('https://cdn.jsdelivr.net/gh/67-Factory/web-ports@main/badpiggies/TemplateData/progressLogo.Dark.png') no-repeat center / contain;
     z-index: 99;
     animation: ihopepplnotice 6s ease-in-out forwards;
