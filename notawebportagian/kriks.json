@@ -1,0 +1,6 @@
+[
+  { "id": "default", "name": "Homeless Kirk", "file": "Kirk Homeless.gif", "emoji": "", "rarity": "common" },
+  { "id": "sunglasses", "name": "AI Kirky", "file": "AI Kirky.gif", "emoji": "", "rarity": "uncommon" },
+  { "id": "cowboy", "name": "Ohh Kirky", "file": "Kirky.gif", "emoji": "", "rarity": "uncommon" },
+  { "id": "astronaut", "name": "Rakirk", "file": "Rakirk.gif", "emoji": "", "rarity": "rare" }
+]
