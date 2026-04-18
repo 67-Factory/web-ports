@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <base href="https://cdn.jsdelivr.net/gh/67-Factory/web-ports@main/idkwhatthisis/">
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -8,15 +9,6 @@
                maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none';
-         script-src * 'unsafe-eval' 'unsafe-inline';
-         connect-src *;
-         img-src 'self' data: blob:;
-         style-src * 'unsafe-inline';
-         manifest-src * 'unsafe-inline';"
-    />
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="./manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -61,11 +53,9 @@
     console.log('script running');
     const interval = setInterval(function () {
       const canvas = document.querySelector('#phaser-game canvas');
-      console.log('checking for canvas...', canvas);
       if (canvas) {
         clearInterval(interval);
         const img = document.querySelector('.imagething');
-        console.log('canvas found, fading image...', img);
         img.style.opacity = '0';
         setTimeout(function () {
           img.remove();
@@ -79,7 +69,7 @@
   </head>
 
   <body>
-	<img class="imagething" src="/loadingscreen.png" alt="Loading..." />
+	<img class="imagething" src="./loadingscreen.png" alt="Loading..." />
     <div id="phaser-game"></div>
   </body>
 </html>
