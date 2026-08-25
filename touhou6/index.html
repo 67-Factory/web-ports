@@ -287,17 +287,15 @@
     const backgroundEl = document.getElementById("background");
     const backgroundFrameEl = document.getElementById("backgroundFrame");
     const flashEl = document.getElementById("flash");
+    // SOME ai, im not bothered to do a loading bar and fucking figure out how the spritesheet pixel stuff works
     const EXPECTED_TOTAL_BYTES = 330 * 1024 * 1024;
     const SPRITE_URL = "touhouloadingbackground.png";
     const SPRITE_COLUMNS = 3;
     const SPRITE_ROWS = 4;
-    // Measured from the sheet: 512x512 cells separated by black gutter
-    // lines, with a ~9px black margin at the top-left. These are the exact
-    // pixel positions where each column/row of cells begins.
     const SPRITE_CELL_X = [9, 526, 1042];
     const SPRITE_CELL_Y = [10, 526, 1041, 1557];
     const SPRITE_CELL_SIZE = 512;
-    const SPRITE_CELL_INSET_PX = 3; // safety trim so gutters never show
+    const SPRITE_CELL_INSET_PX = 3;
     const SPRITE_INTERVAL_MS = 5000;
     const SPRITE_FADE_MS = 600;
 
