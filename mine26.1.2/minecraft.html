@@ -11,9 +11,6 @@
 <body>
   <div id="ld">loading minecraft..</div>
   <script>
-    // minecraft.html was too big for the 20MB cdn limit, so it's stored as
-    // parts in minecraft/part00.. — fetch them, stitch the bytes back, and
-    // replace the whole document with the reassembled game.
     (async function () {
       try {
         var bufs = [], i = 0;
