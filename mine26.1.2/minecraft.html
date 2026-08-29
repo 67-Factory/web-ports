@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minecraft</title>
+  <style>
+    html,body{margin:0;height:100%;background:#0b0c0d;color:#fff;font-family:Arial,sans-serif}
+    #ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+  </style>
+</head>
+<body>
+  <div id="ld">loading minecraft..</div>
+  <script>
+    // minecraft.html was too big for the 20MB cdn limit, so it's stored as
+    // parts in minecraft/part00.. — fetch them, stitch the bytes back, and
+    // replace the whole document with the reassembled game.
+    (async function () {
+      try {
+        var bufs = [], i = 0;
+        while (true) {
+          var res = await fetch("minecraft/part" + String(i).padStart(2, "0"));
+          if (!res.ok) break;
+          bufs.push(new Uint8Array(await res.arrayBuffer()));
+          i++;
+        }
+        if (!bufs.length) throw new Error("no parts found");
+        var total = bufs.reduce(function (a, b) { return a + b.length; }, 0);
+        var merged = new Uint8Array(total), off = 0;
+        for (var k = 0; k < bufs.length; k++) { merged.set(bufs[k], off); off += bufs[k].length; }
+        var html = new TextDecoder("utf-8").decode(merged);
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (e) {
+        document.getElementById("ld").textContent = "failed to load minecraft: " + e;
+      }
+    })();
+  </script>
+</body>
+</html>
